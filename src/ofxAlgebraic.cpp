@@ -23,7 +23,7 @@ template<typename T> ofxAlgebraic_<T>::ofxAlgebraic_(T _value)
 , max(0.f)
 , bezier(0.f)
 {
-    assert(std::tr1::is_floating_point<T>::value && "ERROR: ofxAlgebraic_ MUST BE either float, double or long double! you NUGGET!");
+    assert(is_floating_point<T>::value && "ERROR: ofxAlgebraic_ MUST BE either float, double or long double! you NUGGET!");
 }
 
 //------------------------------
