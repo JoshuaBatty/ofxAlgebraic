@@ -66,9 +66,11 @@ public:
     float getBezierPt(float n1, float n2, float perc);
     float setBezierDepth(float _depth);
     
+    float getFrequency();
     float setFrequency(float _frequency);
     float setAmplitude(float _amplitude);
     float getWithAmplitude(float value);
+    float setPositionOffset(float _offset);
     
     /* Variable Declaration */
     
@@ -86,6 +88,7 @@ public:
     
     float frequency;
     float amplitude;
+    float position_offset;
     
     bool isDMXMode; // If false then osc = -1. 1. ; // else osc mid point is determined by amplitude.
     

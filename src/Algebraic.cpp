@@ -84,14 +84,13 @@ float Algebraic::getSine()
 float Algebraic::getTriangle()
 {
     
-    float phase = sin(TWO_PI * value * frequency / pointX);
+    float sinewave = sin(TWO_PI * value * frequency / pointX);
     
-    if(phase>0.0){
-        return getSignal(fmod(value * (frequency*-1) / pointX, 1.0f) * 4 + 1);
-    } else if(phase<0.0){
-        return getSignal(fmod(value * frequency / pointX, 1.0f) * 4 - 3.0);
+    if(sinewave > 0.0){
+        return getRamp() * 2 - 0.5;
+    } else if(sinewave < 0.0){
+        return getSaw() * 2 - 0.5;
     }
-
 }
 
 //--------------------------------------------------------------------------------//
@@ -100,7 +99,21 @@ float Algebraic::getTriangle()
 
 float Algebraic::getSaw()
 {
-    return getSignal(fmod(value * frequency / pointX, 1.0f) * 2 - 1);
+    //Handles positive and negative frequencies
+    float clamp;
+    int shift;
+    if (frequency >= 0.0) {
+        clamp = 1.0;
+        shift = -1;
+    } else {
+        clamp = -1.0;
+        shift = 1;
+    }
+
+    float phase = value * frequency / pointX;
+    float fmodded = fmod(phase, clamp);
+    
+    return getSignal(fmodded * 2 + shift);
 }
 
 //--------------------------------------------------------------------------------//
@@ -109,7 +122,21 @@ float Algebraic::getSaw()
 
 float Algebraic::getRamp()
 {
-    return getSignal(fmod(value * (frequency*-1) / pointX, 1.0f) * 2 + 1);
+    //Handles positive and negative frequencies
+    float clamp;
+    int shift;
+    if (frequency >= 0.0) {
+        clamp = -1.0;
+        shift = 1;
+    } else {
+        clamp = 1.0;
+        shift = -1;
+    }
+    
+    float phase = value * (frequency*-1) / pointX;
+    float fmodded = fmod(phase, clamp);
+    
+    return getSignal(fmodded * 2 + shift);
 }
 
 //--------------------------------------------------------------------------------//
@@ -169,12 +196,25 @@ float Algebraic::setAmplitude(float _amplitude)
 }
 
 //--------------------------------------------------------------------------------//
+// SET POSITION OFFSET
+//--------------------------------------------------------------------------------//
+
+float Algebraic::setPositionOffset(float _offset)
+{
+    return position_offset = _offset;
+}
+
+//--------------------------------------------------------------------------------//
 // SET FREQUENCY
 //--------------------------------------------------------------------------------//
 
 float Algebraic::setFrequency(float _frequency)
 {
     return frequency = _frequency;
+}
+
+float Algebraic::getFrequency(){
+    return frequency;
 }
 
 //--------------------------------------------------------------------------------//
@@ -185,7 +225,8 @@ float Algebraic::getWithAmplitude(float value)
 {
     /* Multiplies value with amplitude */
     if(isDMXMode){
-        return (value * amplitude) - (1.0 - (amplitude)) ; // This is what i want for DMX
+        float amp_offset = ofMap(position_offset,0.0,1.0,1.0,-1.0);
+        return (value * (amplitude-position_offset)) - (amp_offset - (amplitude-position_offset)) ; // This is what i want for DMX
     } else {
         return value * amplitude;
     }
