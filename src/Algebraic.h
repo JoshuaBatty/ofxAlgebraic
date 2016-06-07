@@ -72,6 +72,9 @@ public:
     float getWithAmplitude(float value);
     float setPositionOffset(float _offset);
     
+    float calculateSaw();
+    float calculateRamp();
+    
     /* Variable Declaration */
     
     float value;

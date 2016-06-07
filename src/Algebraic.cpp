@@ -69,36 +69,10 @@ bool Algebraic::getIsDMXMode()
 }
 
 //--------------------------------------------------------------------------------//
-// RETURN SINE
+// CALCULATE SAW
 //--------------------------------------------------------------------------------//
 
-float Algebraic::getSine()
-{
-    return getSignal(sin(TWO_PI * value * frequency / pointX));
-}
-
-//--------------------------------------------------------------------------------//
-// RETURN TRIANGLE
-//--------------------------------------------------------------------------------//
-
-float Algebraic::getTriangle()
-{
-    
-    float sinewave = sin(TWO_PI * value * frequency / pointX);
-    
-    if(sinewave > 0.0){
-        return getRamp() * 2 - 0.5;
-    } else if(sinewave < 0.0){
-        return getSaw() * 2 - 0.5;
-    }
-}
-
-//--------------------------------------------------------------------------------//
-// RETURN SAW
-//--------------------------------------------------------------------------------//
-
-float Algebraic::getSaw()
-{
+float Algebraic::calculateSaw(){
     //Handles positive and negative frequencies
     float clamp;
     int shift;
@@ -109,19 +83,18 @@ float Algebraic::getSaw()
         clamp = -1.0;
         shift = 1;
     }
-
+    
     float phase = value * frequency / pointX;
     float fmodded = fmod(phase, clamp);
     
-    return getSignal(fmodded * 2 + shift);
+    return fmodded * 2 + shift;
 }
 
 //--------------------------------------------------------------------------------//
-// RETURN RAMP
+// CALCULATE RAMP
 //--------------------------------------------------------------------------------//
 
-float Algebraic::getRamp()
-{
+float Algebraic::calculateRamp(){
     //Handles positive and negative frequencies
     float clamp;
     int shift;
@@ -136,7 +109,51 @@ float Algebraic::getRamp()
     float phase = value * (frequency*-1) / pointX;
     float fmodded = fmod(phase, clamp);
     
-    return getSignal(fmodded * 2 + shift);
+    return fmodded * 2 + shift;
+}
+
+//--------------------------------------------------------------------------------//
+// RETURN SINE
+//--------------------------------------------------------------------------------//
+
+float Algebraic::getSine()
+{
+    return getSignal(sin(TWO_PI * value * frequency / pointX));
+}
+
+//--------------------------------------------------------------------------------//
+// RETURN TRIANGLE
+//--------------------------------------------------------------------------------//
+
+float Algebraic::getTriangle()
+{
+    float sinewave = sin(TWO_PI * value * frequency / pointX);
+    
+    float out;
+    if(sinewave > 0.0){
+        out = calculateRamp();
+    } else if(sinewave < 0.0){
+        out = calculateSaw();
+    }
+    return getSignal(out * 2 - 1);
+}
+
+//--------------------------------------------------------------------------------//
+// RETURN SAW
+//--------------------------------------------------------------------------------//
+
+float Algebraic::getSaw()
+{
+    return getSignal(calculateSaw());
+}
+
+//--------------------------------------------------------------------------------//
+// RETURN RAMP
+//--------------------------------------------------------------------------------//
+
+float Algebraic::getRamp()
+{
+    return getSignal(calculateRamp());
 }
 
 //--------------------------------------------------------------------------------//
