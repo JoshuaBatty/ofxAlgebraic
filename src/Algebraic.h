@@ -4,7 +4,6 @@
 //
 //  Created by Mitchell Nordine on 5/08/13.
 //
-//
 
 #ifndef __jenMax__Algebraic__
 #define __jenMax__Algebraic__
